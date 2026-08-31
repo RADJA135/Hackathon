@@ -1,0 +1,16 @@
+/hachathon/vendor/ 
+/hachathon/node_modules/ 
+/hachathon/.env 
+/hachathon/.env.* 
+/hachathon/storage/*.key 
+/hachathon/*.sqlite 
+/hachathon/public/build/ 
+/hachathon/.vscode/ 
+/hachathon/.idea/ 
+/ai-agent/venv/ 
+/ai-agent/__pycache__/ 
+/ai-agent/*.pyc 
+/ai-agent/.env 
+/Thumbs.db 
+/desktop.ini 
+.DS_Store 
