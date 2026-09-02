@@ -34,7 +34,6 @@ class SimSwapController extends Controller
         return response()->json([
             'sim_swapped' => $check->sim_swapped,
             'sim_swap_last_changed' => $check->sim_swap_last_changed,
-            'raw_nokia_response' => $data, // remove this line once confirmed working
         ]);
     }
 }

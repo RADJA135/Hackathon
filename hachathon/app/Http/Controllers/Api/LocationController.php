@@ -14,15 +14,35 @@ class LocationController extends Controller
     {
         $check = TrustCheck::findOrFail($request->trust_check_id);
 
-        $response = Http::withToken(env('NOKIA_API_KEY'))
-            ->post(env('NOKIA_BASE_URL').'/location-verification/v0/verify', [
+        // MOCK — active until NOKIA_LOCATION_API_KEY is filled in below.
+        if (empty(env('NOKIA_LOCATION_API_KEY'))) {
+            sleep(1);
+            $check->update([
+                'location_consistent' => true,
+                'location_country' => 'DZ',
+                'location_city' => 'Algiers',
+            ]);
+            return response()->json([
+                'location_consistent' => $check->location_consistent,
+                'location_country' => $check->location_country,
+                'location_city' => $check->location_city,
+            ]);
+        }
+
+        // REAL Nokia call — activates automatically once the key above is set.
+        $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'x-rapidapi-host' => env('NOKIA_LOCATION_HOST'),
+                'x-rapidapi-key' => env('NOKIA_LOCATION_API_KEY'),
+            ])
+            ->post(env('NOKIA_LOCATION_URL'), [
                 'phoneNumber' => $check->phone_number,
             ]);
 
-        // TODO: replace with real Nokia NaC response field names once you've
-        // registered and seen the actual sandbox response shape.
         $data = $response->json() ?? [];
 
+        // TODO Haddad: confirm real field names via Example Responses tab,
+        // same way Radja did for SIM Swap — adjust below if different.
         $check->update([
             'location_consistent' => $data['verified'] ?? true,
             'location_country' => $data['country'] ?? null,
