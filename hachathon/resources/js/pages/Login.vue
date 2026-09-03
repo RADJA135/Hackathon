@@ -1,8 +1,8 @@
 
-<script setup>
+<script setup lang="ts">
 // STARTER for Maroua — feel free to restyle, this just makes the flow work.
-import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 const phone = ref('')
 const loading = ref(false)

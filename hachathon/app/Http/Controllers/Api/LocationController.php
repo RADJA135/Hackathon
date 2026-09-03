@@ -11,28 +11,39 @@ class LocationController extends Controller
 {
     // Owner: Haddad
     public function check(Request $request)
-    {
-        $check = TrustCheck::findOrFail($request->trust_check_id);
+{
+    $check = TrustCheck::findOrFail($request->trust_check_id);
 
-        $response = Http::withToken(env('NOKIA_API_KEY'))
-            ->post(env('NOKIA_BASE_URL').'/location-verification/v0/verify', [
+    $response = Http::timeout(30)->withHeaders([
+            'x-rapidapi-host' => env('NOKIA_LOCATION_HOST'),
+            'x-rapidapi-key' => env('NOKIA_LOCATION_API_KEY'),
+        ])
+        ->post(env('NOKIA_LOCATION_URL'), [
+            'device' => [
                 'phoneNumber' => $check->phone_number,
-            ]);
-
-        // TODO: replace with real Nokia NaC response field names once you've
-        // registered and seen the actual sandbox response shape.
-        $data = $response->json() ?? [];
-
-        $check->update([
-            'location_consistent' => $data['verified'] ?? true,
-            'location_country' => $data['country'] ?? null,
-            'location_city' => $data['city'] ?? null,
+            ],
+            'area' => [
+                'areaType' => 'CIRCLE',
+                'center' => [
+                    'latitude' => 36.7538,
+                    'longitude' => 3.0588,
+                ],
+                'radius' => 50000,
+            ],
         ]);
 
-        return response()->json([
-            'location_consistent' => $check->location_consistent,
-            'location_country' => $check->location_country,
-            'location_city' => $check->location_city,
-        ]);
-    }
+    $data = $response->json() ?? [];
+
+    $check->update([
+        'location_consistent' => ($data['verificationResult'] ?? 'FALSE') === 'TRUE',
+        'location_country' => 'Algeria',
+        'location_city' => 'Algiers',
+    ]);
+
+    return response()->json([
+        'location_consistent' => $check->location_consistent,
+        'location_country' => $check->location_country,
+        'location_city' => $check->location_city,
+    ]);
+}
 }
