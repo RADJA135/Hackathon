@@ -13,14 +13,15 @@ class SimSwapController extends Controller
     public function check(Request $request)
     {
         $check = TrustCheck::findOrFail($request->trust_check_id);
+        $cleanPhone = preg_replace('/[\s\-]/', '', $check->phone_number);
 
-        $response = Http::withHeaders([
+        $response = Http::timeout(30)->connectTimeout(15)->withHeaders([
                 'Content-Type' => 'application/json',
                 'x-rapidapi-host' => env('NOKIA_HOST'),
                 'x-rapidapi-key' => env('NOKIA_API_KEY'),
             ])
             ->post(env('NOKIA_SIM_SWAP_URL'), [
-                'phoneNumber' => $check->phone_number,
+                'phoneNumber' => $cleanPhone,
                 'maxAge' => 240,
             ]);
 

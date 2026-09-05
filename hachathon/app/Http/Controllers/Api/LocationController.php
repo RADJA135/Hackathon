@@ -13,14 +13,15 @@ class LocationController extends Controller
     public function check(Request $request)
 {
     $check = TrustCheck::findOrFail($request->trust_check_id);
+    $cleanPhone = preg_replace('/[\s\-]/', '', $check->phone_number);
 
-    $response = Http::timeout(30)->withHeaders([
+    $response = Http::timeout(30)->connectTimeout(15)->withHeaders([
             'x-rapidapi-host' => env('NOKIA_LOCATION_HOST'),
             'x-rapidapi-key' => env('NOKIA_LOCATION_API_KEY'),
         ])
         ->post(env('NOKIA_LOCATION_URL'), [
             'device' => [
-                'phoneNumber' => $check->phone_number,
+                'phoneNumber' => $cleanPhone,
             ],
             'area' => [
                 'areaType' => 'CIRCLE',
