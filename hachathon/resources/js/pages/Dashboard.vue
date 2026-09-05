@@ -1,10 +1,12 @@
    <script setup lang="ts">
 // STARTER for Semsoum — reads the latest TrustCheck passed in from DashboardController.
 //import { computed } from '@inertiajs/vue3'
+import { Head } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import ScoreDial from '@/Components/ScoreDial.vue'
 import SignalRow from '@/Components/SignalRow.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+
 
 interface TrustCheck {
     trust_score: number
@@ -39,7 +41,7 @@ const decisionLabel = {
 
 <template>
   <Head title="Dashboard" />
-    <div class="w-[460px] mx-auto bg-[#101F3D] rounded-2xl p-8">
+    <div class="w-full max-w-[460px] mx-auto bg-[#101F3D] rounded-2xl p-8">
       <!-- TODO: pull in AuthenticatedLayout.vue nav bar (Dashboard/History tabs) -->
 
       <div class="flex justify-center mb-2">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TrustCheck;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -23,7 +24,7 @@ class AuthController extends Controller
         // Decision Agent will all fill in more columns on this same row.
         $check = TrustCheck::create([
             'phone_number' => $request->phone,
-            'user_id' => auth()->id(), // null is fine for the hackathon demo
+            'user_id' => Auth::id(), // null is fine for the hackathon demo
         ]);
 
         session(['trust_check_id' => $check->id]);
@@ -36,11 +37,19 @@ class AuthController extends Controller
         $trustCheckId = session('trust_check_id');
 
         if (! $trustCheckId) {
-            return redirect()->route('login');
+            return redirect()->route('root');
         }
 
         return Inertia::render('Scan', [
             'trustCheckId' => $trustCheckId,
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->session()->forget('trust_check_id');
+        $request->session()->regenerate();
+
+        return redirect()->route('root');
     }
 }

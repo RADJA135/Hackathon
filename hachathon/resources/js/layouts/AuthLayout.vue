@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link , usePage } from '@inertiajs/vue3'
+import { Link , usePage , router } from '@inertiajs/vue3'
 
 const page = usePage()
 </script>
@@ -9,7 +9,9 @@ const page = usePage()
         <header class="flex items-center justify-between px-2 py-4 max-w-[460px] mx-auto">
             <span class="text-2xl font-bold text-white">◉ TrustAI</span>
 
-            <button class="text-slate-300 hover:text-white text-sm">Sign Out</button>
+            <button
+            @click="router.post('/logout')"
+            class="text-slate-300 hover:text-white text-sm">Sign Out</button>
         </header>
         <div class="max-w-[460px] mx-auto px-2 mb-6">
             <div class="grid grid-cols-2 gap-1 rounded-2xl bg-[#182d55] p-1">
