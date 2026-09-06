@@ -56,7 +56,7 @@ const decisionLabel = {
           {{ decisionLabel }}
         </span>
       </div>
-      <SignalRow label="SIM Swap Check" :passed="check?.sim_swapped === false"></SignalRow>
+      <SignalRow label="SIM Swap Check" :passed="check?.sim_swapped == null ? undefined : !check.sim_swapped"></SignalRow>
       <SignalRow label="Device Status" :passed="check?.device_known"></SignalRow>
       <SignalRow label="Location Verification" :passed="check?.location_consistent"></SignalRow>
 

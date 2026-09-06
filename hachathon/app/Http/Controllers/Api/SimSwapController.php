@@ -27,15 +27,18 @@ class SimSwapController extends Controller
 
         $data = $response->json() ?? [];
 
-        $check->update([
-            'sim_swapped' => $data['swapped'] ?? false,
-            'sim_swap_last_changed' => $data['latestSimChange'] ?? null,
-        ]);
+if (! $response->successful()) {
+    return response()->json(['error' => 'SIM Swap check failed', 'details' => $data], 502);
+}
 
-        return response()->json([
-            'sim_swapped' => $check->sim_swapped,
-            'sim_swap_last_changed' => $check->sim_swap_last_changed,
-            'raw_nokia_response' => $data, // remove this line once confirmed working
-        ]);
+$check->update([
+    'sim_swapped' => $data['swapped'] ?? false,
+    'sim_swap_last_changed' => $data['latestSimChange'] ?? null,
+]);
+
+return response()->json([
+    'sim_swapped' => $check->sim_swapped,
+    'sim_swap_last_changed' => $check->sim_swap_last_changed,
+]);
     }
 }
