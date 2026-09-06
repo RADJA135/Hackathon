@@ -1,6 +1,6 @@
-<script setup>
-import { ref, onMounted } from 'vue'
+<script setup lang="ts">
 import { router, usePage } from '@inertiajs/vue3'
+import { ref, onMounted } from 'vue'
 
 const page = usePage()
 const trustCheckId = page.props.trustCheckId // passed in from AuthController redirect
@@ -14,28 +14,35 @@ const signals = ref([
 const collected = ref({})
 const status = ref('checking') // checking | deciding | done | failed
 
-async function callSignal(key, url) {
+async function callSignal(key: string, url: string) {
   try {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ trust_check_id: trustCheckId }),
     })
-    const data = await res.json()
-    collected.value[key] = data
+    const data = await res.json();
+    (collected.value as Record<string, unknown>)[key] = data
     const sig = signals.value.find((s) => s.key === key)
-    sig.done = true
+
+    if (sig) {
+        sig.done = true
+    }
+
     return data
   } catch (e) {
     const sig = signals.value.find((s) => s.key === key)
-    sig.error = true
+
+    if (sig) {
+        sig.error = true
+    }
+
     throw e
   }
 }
 
 async function runChecks() {
   try {
-    // Run all 3 in parallel — they're independent Nokia API calls
     await Promise.all([
       callSignal('sim', '/api/nokia/sim-swap'),
       callSignal('device', '/api/nokia/device-status'),
@@ -44,17 +51,23 @@ async function runChecks() {
 
     status.value = 'deciding'
 
-    // All 3 signals collected — ask the AI agent for the final decision
     const res = await fetch('/api/decision', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ trust_check_id: trustCheckId }),
     })
-    const decision = await res.json()
 
+    if (!res.ok) {
+      // AI agent failed — do NOT proceed to Dashboard with empty data
+      status.value = 'failed'
+
+      return
+    }
+
+    await res.json()
     status.value = 'done'
     router.visit('/dashboard')
-  } catch (e) {
+  } catch {
     status.value = 'failed'
   }
 }

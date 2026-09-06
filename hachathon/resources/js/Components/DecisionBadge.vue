@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   decision: { type: String, default: 'warn' }, // allow | warn | block
   compact: { type: Boolean, default: false },
@@ -9,7 +9,8 @@ const config = {
   warn: { color: '#F2A93B', label: 'Warned', icon: '⚠' },
   block: { color: '#E8596B', label: 'Blocked', icon: '✕' },
 }
-const c = config[props.decision] || { color: '#8AA0BE', label: 'Pending', icon: '…' }
+// @ts-expect-error    because the decision is a string, but we know it will be one of the three values
+const c = config[props.decision as any] || { color: '#8AA0BE', label: 'Pending', icon: '…' }
 </script>
 
 <template>

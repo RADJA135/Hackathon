@@ -21,6 +21,7 @@ class DeviceStatusController extends Controller
                 'device_known' => true,
                 'device_id' => 'mock-device-001',
             ]);
+
             return response()->json([
                 'device_known' => $check->device_known,
                 'device_id' => $check->device_id,
@@ -29,10 +30,10 @@ class DeviceStatusController extends Controller
 
         // REAL Nokia call — activates automatically once the key above is set.
         $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'x-rapidapi-host' => env('NOKIA_DEVICE_STATUS_HOST'),
-                'x-rapidapi-key' => env('NOKIA_DEVICE_STATUS_API_KEY'),
-            ])
+            'Content-Type' => 'application/json',
+            'x-rapidapi-host' => env('NOKIA_DEVICE_STATUS_HOST'),
+            'x-rapidapi-key' => env('NOKIA_DEVICE_STATUS_API_KEY'),
+        ])
             ->post(env('NOKIA_DEVICE_STATUS_URL'), [
                 'phoneNumber' => $check->phone_number,
             ]);
