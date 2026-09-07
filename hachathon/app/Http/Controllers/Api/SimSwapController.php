@@ -26,9 +26,12 @@ class SimSwapController extends Controller
         $data = $response->json() ?? [];
 
         if (! $response->successful()) {
-            return response()->json(['error' => 'SIM Swap check failed', 'details' => $data], 502);
-        }
-
+                  \Log::warning('SIM swap failed', [
+             'status' => $response->status(),
+                'body' => $data,
+               ]);
+               return response()->json(['error' => 'SIM Swap check failed', 'details' => $data], 502);
+}
         // Explicit save (bypasses any mass‑assignment issues)
         $check->sim_swapped = $data['swapped'] ?? false;
         $check->sim_swap_last_changed = $data['latestSimChange'] ?? null;
