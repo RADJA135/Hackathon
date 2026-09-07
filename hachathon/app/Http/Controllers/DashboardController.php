@@ -13,7 +13,7 @@ class DashboardController extends Controller
         $trustCheckId = session('trust_check_id');
 
         if (! $trustCheckId) {
-            return Redirect::route('login');
+            return Redirect::route('root');
         }
 
         $check = TrustCheck::findOrFail($trustCheckId);

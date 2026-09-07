@@ -14,42 +14,29 @@ class DeviceStatusController extends Controller
     {
         $check = TrustCheck::findOrFail($request->trust_check_id);
 
-        // MOCK — active until NOKIA_DEVICE_STATUS_API_KEY is filled in below.
-        if (empty(env('NOKIA_DEVICE_STATUS_API_KEY'))) {
-            sleep(1);
-            $check->update([
-                'device_known' => true,
-                'device_id' => 'mock-device-001',
-            ]);
-
-            return response()->json([
-                'device_known' => $check->device_known,
-                'device_id' => $check->device_id,
-            ]);
-        }
-
-        // REAL Nokia call — activates automatically once the key above is set.
         $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'x-rapidapi-host' => env('NOKIA_DEVICE_STATUS_HOST'),
-            'x-rapidapi-key' => env('NOKIA_DEVICE_STATUS_API_KEY'),
-        ])
-            ->post(env('NOKIA_DEVICE_STATUS_URL'), [
-                'phoneNumber' => $check->phone_number,
+                'X-RapidAPI-Key'  => config('services.nokia_device_status.key'),
+                'X-RapidAPI-Host' => config('services.nokia_device_status.host'),
+            ])
+            ->post(config('services.nokia_device_status.url'), [
+                'device' => [
+                    'phoneNumber' => $check->phone_number,
+                ],
             ]);
 
+            // dd($response->status(), $response->body());
         $data = $response->json() ?? [];
 
-        // TODO Semsoum: confirm real field name via Example Responses tab,
-        // same way Radja did for SIM Swap — adjust 'known' below if different.
+        $connectivityStatus = $data['connectivityStatus'] ?? null;
+
         $check->update([
-            'device_known' => $data['known'] ?? true,
-            'device_id' => $data['deviceId'] ?? null,
+            'device_known' => $connectivityStatus !== null && $connectivityStatus !== 'NOT_CONNECTED',
+            'connectivity_status' => $connectivityStatus,
         ]);
 
         return response()->json([
             'device_known' => $check->device_known,
-            'device_id' => $check->device_id,
+            'connectivity_status' => $check->connectivity_status,
         ]);
     }
 }

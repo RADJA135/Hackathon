@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+'nokia_device_status' => [
+    'key'  => env('NOKIA_DEVICE_STATUS_API_KEY'),
+    'host' => env('NOKIA_DEVICE_STATUS_HOST'),
+    'url'  => env('NOKIA_DEVICE_STATUS_URL'),
+],
 
 ];
