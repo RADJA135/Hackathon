@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 
 class DeviceStatusController extends Controller
 {
-    // Owner: Semsoum
+    // Owner: Meriem
     public function check(Request $request)
     {
         $check = TrustCheck::findOrFail($request->trust_check_id);

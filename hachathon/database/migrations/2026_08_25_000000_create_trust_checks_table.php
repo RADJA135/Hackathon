@@ -3,31 +3,38 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        // First, set all NULL values to a default (0 = false, 1 = true)
-        DB::table('trust_checks')->whereNull('sim_swapped')->update(['sim_swapped' => false]);
-        DB::table('trust_checks')->whereNull('device_known')->update(['device_known' => false]);
-        DB::table('trust_checks')->whereNull('location_consistent')->update(['location_consistent' => true]);
-
-        // Now change columns to NOT NULL with defaults
-        Schema::table('trust_checks', function (Blueprint $table) {
-            $table->boolean('sim_swapped')->default(false)->change();
-            $table->boolean('device_known')->default(false)->change();
-            $table->boolean('location_consistent')->default(true)->change();
+        Schema::create('trust_checks', function (Blueprint $table) {
+            $table->id();
+            $table->string('phone_number');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->boolean('sim_swapped')->default(false);
+            $table->string('sim_swap_last_changed')->nullable();
+            $table->boolean('device_known')->default(false);
+            $table->string('device_id')->nullable();
+            $table->boolean('location_consistent')->default(true);
+            $table->string('location_country')->nullable();
+            $table->string('location_city')->nullable();
+            $table->integer('trust_score')->nullable();
+            $table->string('decision')->nullable();
+            $table->text('agent_reasoning')->nullable();
+            $table->string('device_label')->nullable();
+            $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::table('trust_checks', function (Blueprint $table) {
-            $table->boolean('sim_swapped')->nullable()->change();
-            $table->boolean('device_known')->nullable()->change();
-            $table->boolean('location_consistent')->nullable()->change();
-        });
+        Schema::dropIfExists('trust_checks');
     }
 };

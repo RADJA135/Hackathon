@@ -8,7 +8,7 @@ const error = ref('')
 // Stores only the digits after +999
 const digits = ref('')
 
-// Computed that always shows "+999" + the digits
+
 const phoneDisplay = computed({
   get: () => '+999' + digits.value,
   set: (value) => {

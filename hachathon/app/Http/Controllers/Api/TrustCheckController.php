@@ -7,7 +7,6 @@ use App\Models\TrustCheck;
 
 class TrustCheckController extends Controller
 {
-    // Read-only endpoint the Python Data Agent calls as a tool.
     public function show($id)
     {
         $check = TrustCheck::findOrFail($id);

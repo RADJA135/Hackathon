@@ -1,5 +1,5 @@
    <script setup lang="ts">
-// STARTER for Semsoum — reads the latest TrustCheck passed in from DashboardController.
+
 //import { computed } from '@inertiajs/vue3'
 import { Head } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'

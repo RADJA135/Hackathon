@@ -13,7 +13,6 @@ class HistoryController extends Controller
 
         // Once real auth is wired up, scope to the logged-in user:
         // $query->where('user_id', auth()->id());
-        // For the hackathon demo, show the most recent attempts across all sessions:
         $checks = $query->take(20)->get();
 
         return Inertia::render('History', [

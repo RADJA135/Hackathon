@@ -20,11 +20,10 @@ class AuthController extends Controller
             'phone' => 'required|string|min:8',
         ]);
 
-        // One new row per login attempt — the 3 signal controllers and the
-        // Decision Agent will all fill in more columns on this same row.
+
         $check = TrustCheck::create([
             'phone_number' => $request->phone,
-            'user_id' => Auth::id(), // null is fine for the hackathon demo
+            'user_id' => Auth::id(), 
         ]);
 
         session(['trust_check_id' => $check->id]);

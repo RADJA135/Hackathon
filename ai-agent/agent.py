@@ -1,6 +1,5 @@
 """
-TrustAI Decision Agent — v2 (CrewAI + Ollama, with fallback)
-Run: uvicorn agent:app --reload --port 8001
+TrustAI Decision Agent —(CrewAI + Ollama, with fallback)
 """
 
 import os
@@ -33,7 +32,7 @@ class DecisionOutput(BaseModel):
     decision: str
     reasoning: str
 
-# ---- Deterministic scoring (unchanged) ----
+
 def compute_score(signals: dict) -> tuple[int, str]:
     score = 100
     if signals.get("sim_swapped"):
@@ -47,7 +46,7 @@ def compute_score(signals: dict) -> tuple[int, str]:
     decision = "allow" if score >= 80 else "warn" if score >= 50 else "block"
     return score, decision
 
-# ---- Deterministic fallback reasoning (the source of truth for the dashboard) ----
+
 def fallback_reasoning(signals: dict, score: int, decision: str) -> str:
     parts = []
     if signals.get("sim_swapped"):
@@ -66,11 +65,11 @@ def fallback_reasoning(signals: dict, score: int, decision: str) -> str:
     else:
         parts.append("location consistent")
 
-    # Build a clean, human-readable sentence
+
     signal_summary = ", ".join(parts)
     return f"Trust score {score}/100 ({decision}) – {signal_summary}."
 
-# ---- Crew definition (unchanged, but verbose=True for logs) ----
+
 def build_crew(trust_check_id: int, signals: dict, score: int, decision: str) -> Crew:
     signal_summary = (
         f"Trust check ID: {trust_check_id}\n"
@@ -159,7 +158,7 @@ def build_crew(trust_check_id: int, signals: dict, score: int, decision: str) ->
         agents=[data_agent, identity_agent, risk_agent, decision_agent],
         tasks=[data_task, identity_task, risk_task, decision_task],
         process=Process.sequential,
-        verbose=True,  # Keep logs visible for the demo
+        verbose=True, 
     )
 
 @app.post("/decide", response_model=DecisionOutput)
@@ -167,21 +166,15 @@ def decide(request: DecideRequest):
     signals = request.signals
     score, decision = compute_score(signals)
 
-    # -----------------------------------------------------------------
-    # 🧠 Run CrewAI – this satisfies the hackathon rule.
-    # The output is logged but NOT used for the final dashboard message.
-    # -----------------------------------------------------------------
+    
     crew = build_crew(request.trust_check_id, signals, score, decision)
     result = crew.kickoff()
     raw_crew_output = str(result).strip()
 
     # Log the CrewAI output for reference (visible in terminal)
-    print("\n🧠 CREWAI RAW OUTPUT:\n", raw_crew_output, "\n")
+    print("\n CREWAI RAW OUTPUT:\n", raw_crew_output, "\n")
 
-    # -----------------------------------------------------------------
-    # ✅ ALWAYS use deterministic fallback reasoning for the final UI.
-    # This guarantees the message is correct and matches the score.
-    # -----------------------------------------------------------------
+ 
     reasoning = fallback_reasoning(signals, score, decision)
 
     # Truncate if needed

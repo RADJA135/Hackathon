@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Http;
 
 class LocationController extends Controller
 {
-    // Owner: Haddad
+    // Owner: Maroua
     public function check(Request $request)
     {
         $check = TrustCheck::findOrFail($request->trust_check_id);
