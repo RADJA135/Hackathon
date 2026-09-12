@@ -28,7 +28,12 @@ https://drive.google.com/file/d/1CO0y9HnpfXkalisxrSMbiUSB4wf2eayu/view?usp=shari
 - Meriem Semsoum
 - Maroua Haddad
 
-  ## Note on the Demo Video vs. Live Code
+  
+## Live Nokia API Integration
+
+"TrustAI dynamically calculates the Trust Score based on real-time Nokia CAMARA API signals. Different phone numbers will produce different scores depending on their live SIM Swap, Device Status, and Location Verification results."
+
+ ## Note on the Demo Video vs. Live Code
 
 The demo video was recorded using a temporary DEMO_MODE override that forces specific phone numbers to return predefined scores. This was done purely to demonstrate the full range of results (100, 80, 70, 50, 0) within a 3-minute video, avoiding unreliable API latency during recording.
 
